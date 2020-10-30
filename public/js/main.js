@@ -32,9 +32,9 @@ Hero.prototype.jump = function () {
     const JUMP_SPEED = 600;
     let canJump = this.body.touching.down;
 
-    if (canJump) {
+    // if (canJump) {
         this.body.velocity.y = -JUMP_SPEED;
-    }
+    // }
 
     return canJump;
 };
@@ -138,18 +138,25 @@ PlayState.preload = function () {
     this.game.load.audio('sfx:key', 'audio/key.wav');
     this.game.load.audio('sfx:door', 'audio/door.wav');
     this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30);
+    this.game.load.audio('bgm', ['audio/soundtrack1.mp3']);
 };
 
 // create game entities and set up world here
 PlayState.create = function () {
+    // fade in (from black)
+    this.camera.flash('#000000');
+    
     // create sound entities
     this.sfx = {
         key: this.game.add.audio('sfx:key'),
         door: this.game.add.audio('sfx:door'),
         jump: this.game.add.audio('sfx:jump'),
         coin: this.game.add.audio('sfx:coin'),
-        stomp: this.game.add.audio('sfx:stomp')
+        stomp: this.game.add.audio('sfx:stomp'),
     };
+
+    this.bgm = this.game.add.audio('bgm');
+    this.bgm.loopFull();
 
     this.game.add.image(0, 0, 'background');
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
@@ -179,6 +186,9 @@ PlayState._loadLevel = function (data) {
     // enable gravity
     const GRAVITY = 1200;
     this.game.physics.arcade.gravity.y = GRAVITY;
+
+    // play soundtrack
+    // this.sfx[data.soundtrack].loopFull();
 };
 
 PlayState._spawnPlatform = function (platform) {
@@ -351,6 +361,10 @@ PlayState._handleInput = function () {
     } else { //stop
         this.hero.move(0);
     }
+};
+
+PlayState.shutdown = function () {
+    this.bgm.stop();
 };
 
 window.onload = function () {
